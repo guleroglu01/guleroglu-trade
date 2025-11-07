@@ -28,12 +28,12 @@ if not st.session_state.logged_in:
     st.markdown("# GulerogluTrade — Giriş")
     username = st.text_input("Kullanıcı adı")
     password = st.text_input("Şifre", type="password")
-    if st.button("Giriş"):
-        if username == AUTH_USER and password == AUTH_PWD:
+
+    def login():
+        if username == st.secrets.get("AUTH_USER", "guleroglu") and password == st.secrets.get("AUTH_PWD", "2025export"):
             st.session_state.logged_in = True
-            st.experimental_rerun()
-        else:
-            st.error("Yanlış kullanıcı adı veya şifre.")
+
+    st.button("Giriş", on_click=login)
     st.stop()
 
 st.markdown("# GulerogluTrade v2")
