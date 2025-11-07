@@ -1,5 +1,4 @@
-import requests, os, json
-import pandas as pd
+import requests, os, json, pandas as pd
 
 SUPPORTED_COUNTRIES = {
     "Sırbistan":"688",
@@ -46,30 +45,27 @@ def fetch_comtrade(reporter="688", period="2023", cmdCode="0805", flowCode="M", 
     except Exception as e:
         return None
 
-# Local firm search (demo)
-SAMPLE_FIRMS_CSV = os.path.join(os.path.dirname(__file__), "sample_firms.csv")
+# local firm search demo
+SAMPLE_FIRMS = os.path.join(os.path.dirname(__file__), "sample_firms.csv")
 
 def search_firms_local(q):
-    if not os.path.exists(SAMPLE_FIRMS_CSV):
+    if not os.path.exists(SAMPLE_FIRMS):
         return pd.DataFrame()
-    df = pd.read_csv(SAMPLE_FIRMS_CSV)
-    if not q:
+    df = pd.read_csv(SAMPLE_FIRMS)
+    if not q or str(q).strip()=="" :
         return df
     qlow = q.lower()
-    mask = df.apply(lambda row: qlow in str(row["firm_name"]).lower() or qlow in str(row.get("partnerDesc","")).lower(), axis=1)
+    mask = df.apply(lambda row: qlow in str(row.get("firm_name","")).lower() or qlow in str(row.get("partnerDesc","")).lower(), axis=1)
     return df[mask]
 
-def fetch_opentradestats(country="Sırbistan", year=2023, firm_name=""):
-    # Placeholder for real API; currently use local CSV
-    return search_firms_local(firm_name)
-
-# Favorites
+# favorites storage
 FAV_PATH = os.path.join(os.path.dirname(__file__), "favorites.json")
+
 def load_favorites():
     if not os.path.exists(FAV_PATH):
         return []
     try:
-        return json.load(open(FAV_PATH, "r", encoding="utf-8"))
+        return json.load(open(FAV_PATH,"r",encoding="utf-8"))
     except:
         return []
 
@@ -79,6 +75,6 @@ def save_favorites(obj):
     else:
         data = load_favorites()
         data.append(obj)
-    with open(FAV_PATH, "w", encoding="utf-8") as f:
+    with open(FAV_PATH,"w",encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     return True
